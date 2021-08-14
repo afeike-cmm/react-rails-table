@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useMemo, useState, useEffect } from 'react';
-import { useTable } from 'react-table';
+import { useTable, usePagination } from 'react-table';
 
 
 const NPCTable = () => {
@@ -56,34 +56,73 @@ const NPCTable = () => {
         getTableProps,
         getTableBodyProps,
         headerGroups,
-        rows,
         prepareRow,
-    } = useTable({ columns, data })
+        page,
+        canPreviousPage,
+        canNextPage,
+        pageOptions,
+        pageCount,
+        gotoPage,
+        nextPage,
+        previousPage,
+        setPageSize,
+        state: { pageIndex, pageSize },
+    } = useTable(
+        { 
+            columns, 
+            data,
+            initialState: { pageIndex: 2 },
+        },
+        usePagination
+    )
 
     return (
-        <table {...getTableProps()}>
-            <thead>
-                {headerGroups.map(headerGroup => (
-                    <tr {...headerGroup.getHeaderGroupProps()}>
-                        {headerGroup.headers.map(column => (
-                            <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-                        ))}
-                    </tr>
-                ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-                {rows.map((row, i) => {
-                    prepareRow(row);
-                    return (
-                        <tr {...row.getRowProps()}>
-                            {row.cells.map(cell => {
-                                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                            })}
+        <>
+            <table {...getTableProps()}>
+                <thead>
+                    {headerGroups.map(headerGroup => (
+                        <tr {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroup.headers.map(column => (
+                                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                            ))}
                         </tr>
-                    );
-                })}
-            </tbody>
-        </table>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {page.map((row, i) => {
+                        prepareRow(row);
+                        return (
+                            <tr {...row.getRowProps()}>
+                                {row.cells.map(cell => {
+                                    return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                                })}
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+            {/* Pagination */}
+            <div className="pagination">
+                <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+                    {'<'}
+                </button>{' '}
+                <button onClick={() => nextPage()} disabled={!canNextPage}>
+                    {'>'}
+                </button>{' '}
+                <select
+                    value={pageSize}
+                    onChange={e => {
+                        setPageSize(Number(e.target.value))
+                    }}
+                >
+                    {[10, 20, 30, 40, 50].map(pageSize => (
+                        <option key={pageSize} value={pageSize}>
+                            Show {pageSize}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        </>
     )
 }
 
