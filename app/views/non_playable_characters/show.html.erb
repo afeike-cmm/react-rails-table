@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>First name:</strong>
+  <%= @non_playable_character.first_name %>
+</p>
+
+<p>
+  <strong>Last name:</strong>
+  <%= @non_playable_character.last_name %>
+</p>
+
+<p>
+  <strong>City:</strong>
+  <%= @non_playable_character.city %>
+</p>
+
+<p>
+  <strong>Race:</strong>
+  <%= @non_playable_character.race %>
+</p>
+
+<p>
+  <strong>Weapon:</strong>
+  <%= @non_playable_character.weapon %>
+</p>
+
+<%= link_to 'Edit', edit_non_playable_character_path(@non_playable_character) %> |
+<%= link_to 'Back', non_playable_characters_path %>

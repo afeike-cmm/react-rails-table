@@ -1,0 +1,42 @@
+<%= form_with(model: non_playable_character) do |form| %>
+  <% if non_playable_character.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(non_playable_character.errors.count, "error") %> prohibited this non_playable_character from being saved:</h2>
+
+      <ul>
+        <% non_playable_character.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :first_name %>
+    <%= form.text_field :first_name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :last_name %>
+    <%= form.text_field :last_name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :city %>
+    <%= form.text_field :city %>
+  </div>
+
+  <div class="field">
+    <%= form.label :race %>
+    <%= form.text_field :race %>
+  </div>
+
+  <div class="field">
+    <%= form.label :weapon %>
+    <%= form.text_field :weapon %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
