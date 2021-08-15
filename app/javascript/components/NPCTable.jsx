@@ -1,30 +1,40 @@
 import axios from 'axios';
 import React, { useMemo, useState, useEffect } from 'react';
-import { useTable, usePagination } from 'react-table';
+import Pagination from '@material-ui/lab/Pagination'
+import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table';
 
 
 const NPCTable = () => {
     const [data, setData] = useState([])
+    const [page, setPage] = useState(1)
+    const [totalCount, setTotalCount] = useState(0)
+    const [pageSize, setPageSize] = useState(10)
+
+    const pageSizes = [10, 25, 50]
 
     useEffect(() => {
-        // setData([
-        //     {
-        //         first_name: "Niruin",
-        //         last_name: "Maccius",
-        //         city: "Dawnstar",
-        //         race: "Khajiit",
-        //         weapon: "Aegisbane"
-        //     }
-        // ])
         (async () => {
             const results = await axios("non_playable_character_api/index", {
                 params: {
-                    
+                    page_size: pageSize,
+                    page_index: page
                 }
             });
-            setData(results.data)
+            setData(results.data.data)
+            setTotalCount(results.data.total)
+            const pageCount = results.data.total / pageSize
+            setTotalCount(Math.ceil(pageCount))
         })();
-    }, []);
+    }, [page, pageSize]);
+
+    const handlePageChange = (event, value) => {
+        setPage(value)
+    }
+
+    const handlePageSizeChange = (event) => {
+        setPageSize(event.target.value);
+        setPage(1);
+    }
 
     const columns = useMemo(
         () => [
@@ -57,27 +67,39 @@ const NPCTable = () => {
         getTableBodyProps,
         headerGroups,
         prepareRow,
-        page,
-        canPreviousPage,
-        canNextPage,
-        pageOptions,
-        pageCount,
-        gotoPage,
-        nextPage,
-        previousPage,
-        setPageSize,
-        state: { pageIndex, pageSize },
+        rows,
+        
     } = useTable(
         { 
             columns, 
-            data,
-            initialState: { pageIndex: 2 },
-        },
-        usePagination
+            data: data,
+            
+        }
     )
 
     return (
         <>
+            <div className="mt-3">
+                {/* {"Items per Page: "}
+                <select onChange={handlePageSizeChange} value={pageSize}>
+                    {pageSizes.map((size) => (
+                    <option key={size} value={size}>
+                        {size}
+                    </option>
+                    ))}
+                </select> */}
+
+                <Pagination
+                    className="my-3"
+                    count={totalCount}
+                    page={page}
+                    siblingCount={1}
+                    boundaryCount={1}
+                    variant="outlined"
+                    shape="rounded"
+                    onChange={handlePageChange}
+                />
+            </div>
             <table {...getTableProps()}>
                 <thead>
                     {headerGroups.map(headerGroup => (
@@ -89,7 +111,7 @@ const NPCTable = () => {
                     ))}
                 </thead>
                 <tbody {...getTableBodyProps()}>
-                    {page.map((row, i) => {
+                    {rows.map((row, i) => {
                         prepareRow(row);
                         return (
                             <tr {...row.getRowProps()}>
@@ -101,27 +123,6 @@ const NPCTable = () => {
                     })}
                 </tbody>
             </table>
-            {/* Pagination */}
-            <div className="pagination">
-                <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-                    {'<'}
-                </button>{' '}
-                <button onClick={() => nextPage()} disabled={!canNextPage}>
-                    {'>'}
-                </button>{' '}
-                <select
-                    value={pageSize}
-                    onChange={e => {
-                        setPageSize(Number(e.target.value))
-                    }}
-                >
-                    {[10, 20, 30, 40, 50].map(pageSize => (
-                        <option key={pageSize} value={pageSize}>
-                            Show {pageSize}
-                        </option>
-                    ))}
-                </select>
-            </div>
         </>
     )
 }

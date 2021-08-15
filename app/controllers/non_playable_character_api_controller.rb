@@ -2,8 +2,10 @@ class NonPlayableCharacterApiController < ApplicationController
     before_action :set_npc, only: [:show, :edit, :update, :destroy]
 
     def index
-        @npcs = NonPlayableCharacter.all.order(first_name: :asc)
-        render json: @npcs
+        # binding.pry
+        @npcs = NonPlayableCharacter.paginate(page: params[:page_index], per_page: params[:page_size])
+        results = { :data => @npcs, :total => @npcs.total_entries }
+        render json: results
     end
 
     def show
