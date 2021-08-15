@@ -2,8 +2,8 @@ class NonPlayableCharacterApiController < ApplicationController
     before_action :set_npc, only: [:show, :edit, :update, :destroy]
 
     def index
-        # binding.pry
-        @npcs = NonPlayableCharacter.paginate(page: params[:page_index], per_page: params[:page_size])
+        filters = get_filters
+        @npcs = NonPlayableCharacter.where(filters).paginate(page: params[:page_index], per_page: params[:page_size])
         results = { :data => @npcs, :total => @npcs.total_entries }
         render json: results
     end
@@ -51,5 +51,13 @@ class NonPlayableCharacterApiController < ApplicationController
 
         def npc_params
             params.permit(:first_name, :last_name, :city, :race, :weapon)
+        end
+
+        def get_filters
+            filters = {
+                "first_name" => params[:firstName],
+                "last_name" => params[:lastName]
+            }
+            filters.compact_blank
         end
 end
