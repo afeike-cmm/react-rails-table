@@ -6,6 +6,7 @@ class NonPlayableCharacterApiController < ApplicationController
         npcs = NonPlayableCharacter
         npcs = npcs.where("LOWER(first_name) LIKE ?", "#{filters[:first_name].downcase}%") if filters[:first_name]
         npcs = npcs.where("LOWER(last_name) LIKE ?", "#{filters[:last_name].downcase}%") if filters[:last_name]
+        npcs = npcs.order('first_name ASC')
         npcs = npcs.paginate(page: params[:page_index], per_page: params[:page_size])
         # binding.pry
         results = { :data => npcs, :total => npcs.total_entries }
