@@ -3,8 +3,12 @@ class NonPlayableCharacterApiController < ApplicationController
 
     def index
         filters = get_filters
-        @npcs = NonPlayableCharacter.where(filters).paginate(page: params[:page_index], per_page: params[:page_size])
-        results = { :data => @npcs, :total => @npcs.total_entries }
+        npcs = NonPlayableCharacter
+        npcs = npcs.where("LOWER(first_name) LIKE ?", "#{filters[:first_name].downcase}%") if filters[:first_name]
+        npcs = npcs.where("LOWER(last_name) LIKE ?", "#{filters[:last_name].downcase}%") if filters[:last_name]
+        npcs = npcs.paginate(page: params[:page_index], per_page: params[:page_size])
+        # binding.pry
+        results = { :data => npcs, :total => npcs.total_entries }
         render json: results
     end
 
@@ -55,8 +59,8 @@ class NonPlayableCharacterApiController < ApplicationController
 
         def get_filters
             filters = {
-                "first_name" => params[:firstName],
-                "last_name" => params[:lastName]
+                :first_name => params[:firstName],
+                :last_name => params[:lastName]
             }
             filters.compact_blank
         end

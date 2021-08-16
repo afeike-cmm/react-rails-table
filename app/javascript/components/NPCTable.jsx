@@ -1,8 +1,47 @@
 import axios from 'axios';
 import React, { useMemo, useState, useEffect } from 'react';
-import Pagination from '@material-ui/lab/Pagination'
+import Pagination from '@material-ui/lab/Pagination';
+import BTable from 'react-bootstrap/Table';
+import PropTypes from 'prop-types'
 import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table';
 
+const Table = ({columns, data}) => {
+    const { getTableProps, headerGroups, rows, prepareRow } = useTable({
+        columns,
+        data
+    })
+
+    return (
+        <BTable striped bordered hover size="sm" {...getTableProps()}>
+            <thead>
+                {headerGroups.map((group) => (
+                <tr {...group.getHeaderGroupProps()}>
+                    {group.headers.map((col) => (
+                    <th {...col.getHeaderProps()}>{col.render('Header')}</th>
+                    ))}
+                </tr>
+                ))}
+            </thead>
+            <tbody>
+                {rows.map((row, i) => {
+                prepareRow(row)
+                return (
+                    <tr {...row.getRowProps()} >
+                    {row.cells.map((cell) => {
+                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    })}
+                    </tr>
+                )
+                })}
+            </tbody>
+        </BTable>
+    )
+}
+
+Table.propTypes = {
+    columns: PropTypes.array,
+    data: PropTypes.array,
+}
 
 const NPCTable = () => {
     const [data, setData] = useState([])
@@ -66,18 +105,18 @@ const NPCTable = () => {
         []
     )
 
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        prepareRow,
-        rows,  
-    } = useTable(
-        { 
-            columns, 
-            data: data,
-        }
-    )
+    // const {
+    //     getTableProps,
+    //     getTableBodyProps,
+    //     headerGroups,
+    //     prepareRow,
+    //     rows,  
+    // } = useTable(
+    //     { 
+    //         columns, 
+    //         data: data,
+    //     }
+    // )
 
     return (
         <>
@@ -93,7 +132,7 @@ const NPCTable = () => {
                     placeholder={"Search last name"}
                 />
             </div>
-            <table {...getTableProps()}>
+            {/* <table {...getTableProps()}>
                 <thead>
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -115,7 +154,10 @@ const NPCTable = () => {
                         );
                     })}
                 </tbody>
-            </table>
+            </table> */}
+            <div className="table-responsive">
+                <Table columns={columns} data={data} />
+            </div>
             <div className="mt-3">
                 <Pagination
                     className="my-3"
