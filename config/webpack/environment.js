@@ -1,5 +1,10 @@
 const { environment } = require('@rails/webpacker')
 
+environment.plugins.prepend('Provide', new webpack.ProvidePlugin({
+    Popper: ['popper.js', 'default'], // for Bootstrap 4
+  })
+)
+
 module.exports = environment
 
 const nodeModulesLoader = environment.loaders.get('nodeModules');
